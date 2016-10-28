@@ -42,8 +42,7 @@
    & {:keys [attempts]
       :or {attempts 0}}]
   (let [{:keys [default-graph max-attempts password sparql-endpoint timeout username verbose]
-         :or {attempts 0
-              timeout 3600000}} endpoint
+         :or {attempts 0}} endpoint
         form-params (cond-> {"timeout" timeout
                              "update" sparql-string}
                       default-graph (assoc :default-graph-uri default-graph))]
@@ -51,6 +50,7 @@
                                                        :form-params form-params
                                                        :throw-entire-message? true})]
             (when verbose
+              (println sparql-string)
               (println (format "Executed in %.2f seconds."
                                (-> response
                                    :request-time
@@ -74,10 +74,9 @@
         update-fn (fn [offset]
                     (let [sparql (-> sparql-template
                                      (render-string (merge {:limit page-size
-                                                        :offset offset} params))
+                                                            :offset offset} params))
                                      (prefix-virtuoso-operation virtuoso?))]
-                      (println (format "Executing update operation with offset %s..." offset))
-                      (when verbose (println sparql))
+                      (when verbose (println (format "Executing update operation with offset %s..." offset)))
                       (execute-update sparql)))
         triples-changed (comp (fn [number-like]
                                 (Integer/parseInt number-like))
