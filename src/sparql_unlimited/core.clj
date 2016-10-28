@@ -30,7 +30,7 @@
   {:sparql-endpoint (s/conditional http? url) ; The URL of the SPARQL endpoint.
    :username s/Str ; Credentials of a user permitted to execute SPARQL Update operations.
    :password s/Str
-   :page-size positive-number
+   (s/optional-key :page-size) positive-number
    ; Maximum execution time of the SPARQL operaration in milliseconds (defaults to 10 minutes).
    (s/optional-key :timeout) positive-number
    ; Maximum number of attempts until an exception is thrown.
@@ -118,7 +118,7 @@
   (let [{{:keys [config help sparql verbose]} :options
          :keys [errors summary]} (parse-opts args cli-options)
         ; Merge defaults
-        config' (merge {:max-attempts 5} config)]
+        config' (merge {:max-attempts 5 :page-size 10000} config)]
     (cond help (info (usage summary)) 
           errors (die (error-msg errors))
           :else (let [sparql-string (slurp sparql)]
