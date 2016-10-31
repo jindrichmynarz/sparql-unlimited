@@ -1,7 +1,6 @@
 (ns sparql-unlimited.sparql
   (:require [sparql-unlimited.mustache :refer [get-template-variables]]
             [sparql-unlimited.endpoint :refer [endpoint]]
-            [clojure.set :refer [subset?]]
             [clj-http.client :as client]
             [stencil.core :refer [render-string]]
             [slingshot.slingshot :refer [throw+ try+]]
@@ -13,9 +12,9 @@
 
 (defn- is-paged?
   "Test if `sparql` is a template for paged SPARQL operation.
-  Paged SPARQL operations must use variables named 'limit' and 'offset'."
+  Paged SPARQL operations must use the variable named 'limit'." 
   [sparql]
-  (subset? #{:limit :offset} (get-template-variables sparql)))
+  (:limit (get-template-variables sparql)))
 
 (defn- xml->zipper
   "Take XML string `s`, parse it, and return XML zipper."

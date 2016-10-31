@@ -28,7 +28,7 @@ You will need to provide a configuration file and a SPARQL update. The configura
 * `params` (optional): Map of parameters to use in rendering Mustache template of the SPARQL update.
 * `start-from` (optional): An offset to start from when restarting a paged update.
 
-The SPARQL update can either be a SPARQL 1.1 Update file or a Mustache template that can render SPARQL 1.1 Update. If an update is to be executed in pages, it needs to be provided in a Mustache template that uses the parameters `limit` and `offset` to determine the page to be updated. 
+The SPARQL update can either be a SPARQL 1.1 Update file or a Mustache template that can render SPARQL 1.1 Update. If an update is to be executed in pages, it needs to be provided in a Mustache template that uses the parameters `limit` to determine the size of the page to be updated. If an update does not filter out the already processed bindings in its `WHERE` clause, it must filter these bindings by using an `ORDER BY` and an increasing OFFSET using the `offset` variable.
 
 ## Issues
 
