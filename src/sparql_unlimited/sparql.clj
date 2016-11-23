@@ -6,7 +6,8 @@
             [slingshot.slingshot :refer [throw+ try+]]
             [clojure.xml :as xml]
             [clojure.zip :as zip]
-            [clojure.data.zip.xml :as zip-xml]))
+            [clojure.data.zip.xml :as zip-xml]
+            [clojure.string :as string]))
 
 ; ----- Private functions -----
 
@@ -69,7 +70,6 @@
   [sparql-template]
   (let [{:keys [page-size params start-from verbose virtuoso?]
          :or {start-from 0}} endpoint
-        message-regex (re-pattern #"(\d+)( \(or less\))?")
         update-fn (fn [offset]
                     (let [sparql (-> sparql-template
                                      (render-string (merge {:limit page-size
@@ -77,16 +77,12 @@
                                      (prefix-virtuoso-operation virtuoso?))]
                       (when verbose (println (format "Executing update operation with offset %s..." offset)))
                       (execute-update sparql)))
-        triples-changed (comp (fn [number-like]
-                                (Integer/parseInt number-like))
-                              second
-                              (fn [message]
-                                (re-find message-regex message))
-                              first
-                              (fn [zipper]
-                                (zip-xml/xml-> zipper :results :result :binding :literal zip-xml/text))
-                              xml->zipper)
-        continue? (comp not zero? triples-changed)]
+        continue? (fn [response] (-> response
+                                     xml->zipper
+                                     (zip-xml/xml-> :results :result :binding :literal zip-xml/text)
+                                     first
+                                     (string/includes? "nothing to do")
+                                     not))]
     (dorun (->> (iterate (partial + page-size) start-from)
                 (map update-fn)
                 (take-while continue?)))))
