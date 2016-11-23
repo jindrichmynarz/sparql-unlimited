@@ -69,7 +69,7 @@
   [sparql-template]
   (let [{:keys [page-size params start-from verbose virtuoso?]
          :or {start-from 0}} endpoint
-        message-regex (re-pattern #"(\d+)( \(or less\))? triples")
+        message-regex (re-pattern #"(\d+)( \(or less\))?")
         update-fn (fn [offset]
                     (let [sparql (-> sparql-template
                                      (render-string (merge {:limit page-size
