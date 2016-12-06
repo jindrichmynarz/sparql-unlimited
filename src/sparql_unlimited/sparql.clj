@@ -42,7 +42,7 @@
    & {:keys [attempts]
       :or {attempts 0}}]
   (let [{:keys [default-graph max-attempts password sparql-endpoint timeout username verbose]
-         :or {attempts 0}} endpoint
+         :or {max-attempts 0}} endpoint
         form-params (cond-> {"timeout" timeout
                              "update" sparql-string}
                       default-graph (assoc :default-graph-uri default-graph))]
