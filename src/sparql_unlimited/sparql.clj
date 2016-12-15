@@ -60,7 +60,8 @@
             (if (= (get-in response [:headers "X-SQL-State"]) "S1TAT")
               (if (= attempts max-attempts)
                 (throw+ {:type ::incomplete-results})
-                (execute-update sparql-string :attempts (inc attempts)))
+                (do (println "Received partial results. Retrying...")
+                  (execute-update sparql-string :attempts (inc attempts))))
               (:body response)))
           (catch Exception {:keys [body]}
             (println body)
